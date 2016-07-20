@@ -51,16 +51,15 @@ db = SQLAlchemy(app)
 #--------------------
 """
 This converts the comma separated values input file to a more usable JSON file.
+Should I include the path as an input
 """
-
-csvfile = open('/adamalloy/downloads/CeleyaData.csv', 'r')
-reader = csv.DictReader(csvfile, fieldnames =  ("Team Number", "Station Number", "Date and Time of Data", "Coordinates of Site", 
-"Prepended text", "Station references", "Fault Name", "Data Type", "Strike of Fault", "Angle Between Surface
- and Slip or Dip", "Throw of Fault", "Slip of Fault", "Hand Written Notes", "Image 1 Link", "Image 1 Subject",
-"Image Description and Key Words", "Image 2 Link", "Image 2 Subject", "Image 2 Descrition and Key Words", "Image 3 Link"<
-"Image 3 Subject", "Image 3 Description and Key Words", "Track Map Image", "Track Map URL", "More Comments")
-out = json.dumps([ row for row in reader])
-print out
+def convercsv():
+	csvfile = open('/adamalloy/downloads/CeleyaData.csv', 'r')
+	reader = csv.DictReader(csvfile, fieldnames =  ("Team Number", "Station Number", "Date and Time of Data", "Coordinates of Site", 
+"Prepended text", "Station references", "Fault Name", "Data Type", "Strike of Fault", "Angle Between Surface and Slip or Dip", "Throw of Fault", "Slip of Fault", "Hand Written Notes", "Image 1 Link", "Image 1 Subject", "Image Description and Key Words", "Image 2 Link", "Image 2 Subject", "Image 2 Descrition and Key Words", "Image 3 Link","Image 3 Subject", "Image 3 Description and Key Words", "Track Map Image", "Track Map URL", "More Comments")
+	out = json.dumps([ row for row in reader])
+	print out
+	return out
 
 
 #----------------
@@ -107,7 +106,45 @@ image_3_description = db.Column(db.String(256))
 def init_subsidence_point(out):
 	for data in out:
 	s = SubsidencePoint(team_number = data["team_number"], station_number ["station_number"], data_time = data["data_time"], coordinates = data["coordinates"], prepended_text = data["prepended_text"], station_references = data["station_references"] , fault =data["fault"], data_type = data["data_type"], strike = data["strike"], angle = data["angle"], throw = data["throw"], slip = data["slip"], notes = data["notes"], image_1_link = data["image_1_link"], image_1_subject = data["image_1_subject"], image_1_description = data["image_1_description"], image_2_link = data["image_2_link"], image_2_subject = data["image_2_subject"], image_2_description = data["image_2_description"],image_3_link = data["image_3_link"], image_3_subject = data["image_3_subject"], image_3_description = data["image_3_description"])
+
+@manager.command
+def init_database
+	db.drop_all()
+	db.create_all()
+	logger.debug("initializing subsidence points")
+	init_subsidence_point(convertcsv(out))
+
 	
 
+# ----------------
+# Manager Commands
+# ----------------
+
+@manager.command
+def create_db():
+    """
+    This command is used to initialize the database and insert the data scraped     """
+
+    app.config['SQLALCHEMY_ECHO'] = True
+    db.drop_all()
+    db.create_all()
+    init_db()
+    db.session.commit()
+
+@manager.command
+def drop_db():
+    """
+    This command can be called to drop all tables used for our models.
+    """
+    # logger.debug("drop_db")
+    app.config['SQLALCHEMY_ECHO'] = True
+    db.drop_all()
+
+# -------
+# Run App
+# -------
+
+if __name__ == '__main__':
+    manager.run()
 
 
