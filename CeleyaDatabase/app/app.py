@@ -20,7 +20,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-logger.debug("Welcome to Virtual Address Space")
+logger.debug("Celeya Database Online.")
 """
 
 
